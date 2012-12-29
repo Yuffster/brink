@@ -1,0 +1,25 @@
+{
+	"globals"  : {
+		"Brink"     : true,
+		"require"   : false,
+		"window"    : false,
+		"module"    : true,
+		"__dirname" : true,
+		"GLOBAL"    : false
+	},
+	"debug"    : false,
+	"eqnull"   : true,
+	"boss"     : true,
+	"loopfunc" : true,
+	"evil"     : true,
+	"laxbreak" : true,
+	"undef"    : true,
+	"unused"   : true,
+	"nonew"    : true,
+	"indent"   : 4,
+	"maxerr"   : 50,
+	"strict"   : false,
+	"smarttabs": true,
+	"white"    : false,
+	"supernew" : true
+}
