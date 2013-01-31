@@ -5,7 +5,7 @@
 		"window"    : false,
 		"module"    : true,
 		"__dirname" : true,
-		"GLOBAL"    : false
+		"global"    : false
 	},
 	"debug"    : false,
 	"eqnull"   : true,

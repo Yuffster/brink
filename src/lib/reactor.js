@@ -40,11 +40,16 @@
  * able to reproduce the same state given the same parameters.
  */
 
-var fs       = require('fs'),
-    jsdom    = require('jsdom'),
-    glob     = require('glob'),
-    path     = require('path'),
-    Mustache = require('mustache');
+var fs, jsdom, glob, path, Mustache;
+
+if (Brink.server) {
+	fs     = require('fs');
+	jsdom  = require('jsdom');
+	glob   = require('glob');
+	path   = require('path');
+}
+
+Mustache = Brink.require("mustache");
 
 function Reactor(dir, fun) {
 
@@ -53,6 +58,13 @@ function Reactor(dir, fun) {
 	    partials  = {},
 	    doc, current_screen, head;
 
+	if (Brink.client) {
+		var templates = window.__brink_templates;
+		screens  = templates.screens;
+		layouts  = templates.layouts;
+		partials = templates.partials;
+	}
+
 	var self = {};
 
 	(function constructor(dir) {
@@ -60,10 +72,15 @@ function Reactor(dir, fun) {
 			fun  = dir;
 			dir = "";
 		}
-		parseHTML(dir, function(e) {
+		if (Brink.server) {
+			parseHTML(dir, function(e,html) {
+				compile();
+				Brink.callback(fun, self);
+			});
+		} else {
 			compile();
-			Brink.callback(fun, self);
-		});
+
+		}
 	}(dir));
 
 	function parseHTML(dir, fun) {
@@ -86,7 +103,6 @@ function Reactor(dir, fun) {
 			}
 
 			var html  = fs.readFileSync(file, 'utf8');
-
 
 			//Cheap hack; jsdom seems to discard the > when it parses the
 			//raw HTML.
@@ -160,7 +176,6 @@ function Reactor(dir, fun) {
 			    content = fs.readFileSync(base, 'utf8');
 
 			var data = {
-				brink_js: [{src:'/assets/application.js'}],
 				head: head
 			};
 
@@ -176,36 +191,65 @@ function Reactor(dir, fun) {
 		}
 
 		if (Brink.client) {
+
 			doc = {
 				render: liveUpdate
 			};
+
 			return doc;
+
 		} else {
+
+			Brink.route('brink/templates.js', function(req,res) {
+
+				var data = "";
+
+				data += "window.__brink_templates = ";
+
+				data += JSON.stringify({
+					screens: screens,
+					layouts: layouts,
+					partials: partials
+				});
+
+				data += ";";
+
+				res.end(data);
+
+			});
+
 			doc = {
 				render: staticRender
 			};
+
 			return doc;
+
 		}
 
 	}
 
 	function render(screen, data) {
 		current_screen = screen;
-		var content = Mustache.render(screens[screen], data, partials);
+		var content = Mustache.render(screens[screen], (data||{}), partials);
 		return doc.render(content);
-
 	}
 
 	function update(data) {
+		if (Brink.client && !current_screen) {
+			current_screen = window.document.getElementsByTagName('body')[0].getAttribute('id');
+		}
 		// Render the <body> using the new data.
 		return render(current_screen, data);
 	}
-
 
 	self = {
 		render : render,
 		update : update
 	};
+
+	if (Brink.client) { 
+		window.doc = self;
+	}
 
 	return self;
 

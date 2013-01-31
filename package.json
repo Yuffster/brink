@@ -1,0 +1,20 @@
+{
+	"name" : "Brink",
+	"description" : "A full-stack, lightweight Node framework for dead simple for realtime single-page applications.",
+	"version" : "0.0.1",
+	"author" : "Michelle Steigerwalt <msteigerwalt.com>",
+	"repository" : {
+		"type" : "git",
+		"url" : "git://github.com/Yuffster/brink.git"
+	},
+	"main": "src/lib/brink.js",
+	"dependencies": {
+		"sanitizer": "*",
+		"socket.io": "*",
+		"glob": "*",
+		"jsdom": "*",
+		"mustache": "*",
+		"mongodb": "*",
+		"connect": "*"
+	}
+}
