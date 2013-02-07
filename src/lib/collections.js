@@ -5,15 +5,8 @@
 var Queue = Brink.require('queue');
 
 var collections = {},
-    db  = require('mongodb').MongoClient,
     dbQ = new Queue(),
-    conn;
-
-// Connect to the db
-db.connect("mongodb://localhost:27017/exampleDb", function(err, db) {
-	conn = db;
-	dbQ.trigger();
-});
+    db  = new Brink.require('database')(dbQ);
 
 function Collection(name, fields, opts) {
 
@@ -98,7 +91,7 @@ function Collection(name, fields, opts) {
 
 		function run(fn) {
 			if (!fn) return;
-			conn.collection(name).find(criteria).toArray(function(e,d) {
+			db.select(name, criteria, function(e,d) {
 				if (d) fn(null, new CollectionSet(d));
 				else fn(e, null);
 			});
@@ -132,9 +125,10 @@ function Collection(name, fields, opts) {
 
 		function run(fn) {
 			if (!fn) return;
-			conn.collection(name).findOne(criteria, function(e,d) {
-				if (d) fn(null, new CollectionSet(d));
-				else fn(e, null);
+			db.select_one(name, criteria, function(e,d) {
+				if (d) {
+					fn(null, new CollectionItem(d));
+				} else fn(e, null);
 			});
 		}
 
@@ -153,7 +147,7 @@ function Collection(name, fields, opts) {
 
 	function create(obj, fun) {
 		fun = fun || function() { };
-		conn.collection(name).insert(obj, fun);
+		db.insert(name, obj, fun);
 	}
 
 	function authorize(field, action) {
@@ -241,7 +235,7 @@ function Collection(name, fields, opts) {
 		function update(vals, fun) {
 			fun = fun || function() { };
 			for (var k in vals) set(k, vals[k]);
-			conn.collection(name).update({_id:doc._id}, data(), fun);
+			db.update({id:doc.id}, _modified, fun);
 		}
 
 		function authorize(user, action) {
@@ -276,7 +270,6 @@ function Collection(name, fields, opts) {
 			update    : update,
 			authorize : authorize,
 			destroy   : destroy,
-			hash      : hash,
 			get       : get,
 			set       : set,
 			data      : data,
@@ -347,11 +340,8 @@ self = {
 	filter   : find,
 	find_one : find_one,
 	create   : create,
-	push     : push
+	push     : push,
+	define   : define
 };
-
-Brink.enqueue(self, dbQ);
-
-self.define = define;
 
 module.exports = self;
