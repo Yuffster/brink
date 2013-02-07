@@ -56,7 +56,8 @@ function ClientHTTP(handler) {
 	};
 
 	return {
-		listen: function() { }
+		listen: function() { },
+		attach: function() { }
 	};
 
 }
@@ -65,11 +66,13 @@ function ServerHTTP(handler) {
 
 	var sys     = require('util'),
 	    connect = require('connect'),
-	    app     = connect();
+	    app     = connect(),
+	    server  = require('http').createServer(app),
+	    Queue   = Brink.require('queue');
 
 	app.use(connect.bodyParser());
 
-	app.use(function (req, res) {
+	app.use(function (req, res, next) {
 
 		var data = {}, breq, bres;
 
@@ -80,18 +83,27 @@ function ServerHTTP(handler) {
 		breq = new Request(req.url, data);
 		bres = new Response();
 
-		handler(breq,res);
+		handler(breq,res,next);
 
 	});
 
+	var listenQ = new Queue();
+
 	function listen(port) {
 		sys.puts("Now listening on port "+port+".");
-		app.listen(port);
+		server.listen(port);
+		listenQ.trigger();
+	}
+
+	function attach(thing) {
+		listenQ.push(function() {
+			thing.listen(server);
+		});
 	}
 
 	return {
 		listen: listen,
-		raw: app
+		attach: attach
 	};
 
 }

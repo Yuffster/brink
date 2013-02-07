@@ -13,9 +13,7 @@ function Router() {
 	listenQ = new Queue();
 	reactor = new Reactor(Brink.application_path(), listenQ);
 
-	app = new http(function (req, res) {
-
-		res.writeHead(200, {'Content-Type': 'text/html'});
+	app = new http(function (req, res, next) {
 
 		res.render = function(view, data) {
 
@@ -57,10 +55,10 @@ function Router() {
 		var handler = getHandler(req);
 
 		if (handler) {
+			res.writeHead(200, {'Content-Type': 'text/html'});
 			handler(req, res);
 		} else {
-			res.writeHead(404);
-			res.end();
+			next();
 		}
 
 	});
@@ -109,7 +107,6 @@ function Router() {
 
 	// (match, [method,] fun)
 	function route(match, method, fun) {
-
 		if (arguments.length==2) {
 			fun    = method;
 			method = '*';
@@ -118,14 +115,17 @@ function Router() {
 		routes[match].push({method:method, handler:fun});
 	}
 
+	function attach(thing) {
+		app.attach(thing);
+	}
+
 	self = {
 		listen: listen,
-		route: route
+		route: route,
+		attach: attach
 	}
 
 	if (Brink.server) Brink.enqueue(self, listenQ);
-
-	self.http = app.raw;
 
 	return self;
 

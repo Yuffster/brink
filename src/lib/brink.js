@@ -35,6 +35,6 @@ Brink.listen = function(port) {
 	router.listen(port);
 }
 
-var transport  = new Brink.require('transport')(router);
+var transport = new Brink.require('transport')(router);
 
 module.exports = Brink;
