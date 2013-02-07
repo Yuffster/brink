@@ -11,7 +11,7 @@ function CurrentUser() {
 	var self = {};
 
 	// Retrieves a value from this user's session data.
-	function get(key, default) {
+	function get(key, def) {
 
 	}
 
