@@ -17,7 +17,7 @@
 
 function TransportServer(router) {
 
-	var io       = router.attach(require('socket.io')),
+	var io       = require('socket.io'),
 	    self     = {},
 	    // UserConnection objects indexed by sessionId.
 	    users    = {},
@@ -26,6 +26,8 @@ function TransportServer(router) {
 	    manifest = {},
 	    // objectIds indexed by sessionId.
 	    sessions = {};
+
+	router.attach(io);
 
 	function UserConnection(socket) {
 
