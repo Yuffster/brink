@@ -11,12 +11,10 @@ function Database(callback) {
 	})(callback);
 
 	function select(name, criteria, callback) {
-		if (!callback) return;
 		callback(null, []);
 	}
 
 	function select_one(name, criteria, callback) {
-		if (!callback) return;
 		callback(null, {});
 	}
 

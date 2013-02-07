@@ -20,7 +20,6 @@ function Database(callback) {
 	})(callback);
 
 	function select(name, criteria, callback) {
-		callback = callback || function() { };
 		conn.collection(name).find(criteria).toArray(callback);
 	}
 
