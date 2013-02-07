@@ -1,6 +1,6 @@
 (function() {
 
-	require = Brink._creq;
+	var require = Brink._creq;
 
 	var module = { exports: {} };
 
@@ -12,7 +12,7 @@
 
 			return module.exports;
 
-		}());
+		}(module));
 
 	});
 

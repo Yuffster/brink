@@ -40,13 +40,15 @@ function TransportServer(router) {
 		// Shortcut to get or create a manifest of object IDs for a user
 		// indexed by session ID.
 		function _user() {
-			return users[sessionId] || users[sessionId] = [];
+			if (!users[sessionId]) users[sessionId] = [];
+			return users[sessionId];
 		} 
 
 		// Shortcut to get or create an entry in the manifests to store
 		// session IDs of users subscribed to that item.
 		function _manifest(objId) {
-			return manifest[objId] || manifest[objId] = [];
+			if (!manifest[objId]) manifest[objId] = []
+			return manifest[objId];
  		}
 
 	 	// Adds an item to the user's manifest so that all changes to that
@@ -155,7 +157,7 @@ function TransportClient() {
 	    callbacks = {},
 	    // Objects indexed by their IDs.
 	    manifest  = {},
-	    Storage   = Brink.require('client/amplify.store');
+	    Storage   = Brink.require('amplify.store');
 
 	var handlers = {
 

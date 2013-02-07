@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="/brink/templates.js"></script>
-	<script src="/brink/brink.js"></script>
+	{{#core_js}}
+		<script src="{{core_root}}/{{src}}"></script>
+	{{/core_js}}
 
 	<meta charset="utf-8">
 	<title></title>
 
-	{{head}}
+	{{{head}}}
 
 	{{#app_js}}
-		<script src="{{src}}"></script>
+		<script src="{{app_root}}/{{src}}"></script>
 	{{/app_js}}
 
 </head>

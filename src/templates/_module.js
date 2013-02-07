@@ -1,11 +1,13 @@
-"{{{path}}}": function() {
+Brink._cexp("{{{path}}}", function() {
 
-	return (new function {{{name}}}(module) {
+	var module = {exports:{}};
+	
+	return (new function(module) {
 
 		{{{content}}}
 
 		return module.exports;
 
-	}(mod()));
+	}(module));
 
-}
+});

@@ -32,6 +32,8 @@
  *
  *  update(data);
  *
+ *  attach(router);
+ *
  * Todo:
  *
  * Concept of something more granular than screens. The client should be 
@@ -40,14 +42,11 @@
  * able to reproduce the same state given the same parameters.
  */
 
-var fs, jsdom, glob, path, Mustache;
-
-if (Brink.server) {
-	fs     = require('fs');
-	jsdom  = require('jsdom');
-	glob   = require('glob');
-	path   = require('path');
-}
+var fs     = require('fs'),
+    jsdom  = require('jsdom'),
+    glob   = require('glob'),
+    path   = require('path'),
+    assets = new Brink.require('assets')();
 
 Mustache = Brink.require("mustache");
 
@@ -57,13 +56,6 @@ function Reactor(dir, fun) {
 	    layouts   = {},
 	    partials  = {},
 	    doc, current_screen, head;
-
-	if (Brink.client) {
-		var templates = window.__brink_templates;
-		screens  = templates.screens;
-		layouts  = templates.layouts;
-		partials = templates.partials;
-	}
 
 	var self = {};
 
@@ -79,7 +71,7 @@ function Reactor(dir, fun) {
 			});
 		} else {
 			compile();
-
+			Brink.callback(fun, self);
 		}
 	}(dir));
 
@@ -165,11 +157,7 @@ function Reactor(dir, fun) {
 
 		var html;
 
-		function liveUpdate(body) {
-			window.document.body.innerHTML = body;
-			window.document.body.id = current_screen;
-		}
-
+		//The first render of the application is always server-side and static.
 		function staticRender(body) {
 
 			var base    = Brink.path('templates', 'application.html'),
@@ -180,7 +168,9 @@ function Reactor(dir, fun) {
 			};
 
 			data.body = body;
-			data.screen_name = current_screen;
+			data.screen_name  = current_screen;
+			data.app_js  = assets.getAppScripts();
+			data.core_js = assets.getCoreScripts();
 
 			data.body = Mustache.render(layouts._main, data);
 
@@ -190,41 +180,11 @@ function Reactor(dir, fun) {
 
 		}
 
-		if (Brink.client) {
+		doc = {
+			render: staticRender
+		};
 
-			doc = {
-				render: liveUpdate
-			};
-
-			return doc;
-
-		} else {
-
-			Brink.route('brink/templates.js', function(req,res) {
-
-				var data = "";
-
-				data += "window.__brink_templates = ";
-
-				data += JSON.stringify({
-					screens: screens,
-					layouts: layouts,
-					partials: partials
-				});
-
-				data += ";";
-
-				res.end(data);
-
-			});
-
-			doc = {
-				render: staticRender
-			};
-
-			return doc;
-
-		}
+		return doc;
 
 	}
 
@@ -235,21 +195,36 @@ function Reactor(dir, fun) {
 	}
 
 	function update(data) {
-		if (Brink.client && !current_screen) {
-			current_screen = window.document.getElementsByTagName('body')[0].getAttribute('id');
-		}
-		// Render the <body> using the new data.
 		return render(current_screen, data);
+	}
+
+	function attach(router) {
+
+		router.route('/js/app/_templates.js', function(req,res) {
+
+			var data = "";
+
+			data += "window.__brink_templates = ";
+
+			data += JSON.stringify({
+				screens: screens,
+				layouts: layouts,
+				partials: partials
+			});
+
+			data += ";";
+
+			res.end(data);
+
+		});
+
 	}
 
 	self = {
 		render : render,
-		update : update
+		update : update,
+		attach : attach
 	};
-
-	if (Brink.client) { 
-		window.doc = self;
-	}
 
 	return self;
 

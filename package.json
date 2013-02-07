@@ -7,6 +7,9 @@
 		"type" : "git",
 		"url" : "git://github.com/Yuffster/brink.git"
 	},
+	"scripts": {
+		"brink": "node cli.js"
+	},
 	"main": "src/lib/brink.js",
 	"dependencies": {
 		"sanitizer": "*",

@@ -29,42 +29,34 @@ function Request(url, data) {
 		params : {},
 		path   : path,
 		files  : null,
-		method : data.method.toLowerCase(),
-		headers: data.headers
+		method : (data.method) ? data.method.toLowerCase() : 'get',
+		headers: data.headers || {}
 	};
 
 }
 
 function Response() {
 
-
-	function end() {
-		
-	}
-
-	function writeHead() {
-	}
-
 	return {
-		end: end,
-		writeHead: writeHead
+		write: function() { },
+		end: function() { },
+		writeHead: function() { }
 	};
 
 }
 
 function ClientHTTP(handler) {
 
+	var handler = handler || function() { };
+
 	window.onhashchange = function() {
-		var url = window.location.hash.substring(1);
-		handler(new Request(url), new Response());
+		var url  = window.location.hash.substring(1),
+		    data = {};
+		handler(new Request(url, data), new Response());
 	};
 
-	function listen() {
-
-	}
-
 	return {
-		listen: listen
+		listen: function() { }
 	};
 
 }
@@ -87,8 +79,6 @@ function ServerHTTP(handler) {
 
 		breq = new Request(req.url, data);
 		bres = new Response();
-
-		res.writeHead(200, {'Content-Type': 'text/html'});
 
 		handler(breq,res);
 
