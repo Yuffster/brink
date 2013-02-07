@@ -8,19 +8,50 @@ function Router() {
 	    routes  = {},
 	    reactor,
 	    app, 
-	    listenQ,
-	    //The asset server will callback with script URLs to add to head.
-	    scripts = [];
+	    listenQ;
 
 	listenQ = new Queue();
-	reactor = new Reactor(listenQ);
+	reactor = new Reactor(Brink.application_path(), listenQ);
 
 	app = new http(function (req, res) {
 
 		res.writeHead(200, {'Content-Type': 'text/html'});
 
 		res.render = function(view, data) {
-			res.end(reactor.render(view, data));
+
+			function fun(e,d) {
+				if (typeof d.data=="function") {
+					d = d.data();
+				} else {
+					for (var k in d) {
+						if (typeof(d[k].data=="function")) d[k] = d[k].data();
+					}
+				} res.end(reactor.render(view, d));
+			}
+
+			if (data) {
+				if (data.run) return data.run(fun);
+				for (var k in data) {
+					// This means we've got some deferred calls hanging out 
+					// within our template dataset.  We'll have to wait for
+					// each of these calls to complete and then reform the
+					// data object.
+					var outstanding = 0;
+					if (typeof(data[k].run)=="function") {
+						outstanding++;
+						(function(k) {
+							data[k].run(function(e,d) {
+								outstanding--;
+								data[k] = d;
+								if (outstanding==0) fun(e,data);
+							});
+						})(k);
+					}
+				}
+			} else {
+				fun();
+			}
+
 		};
 
 		var handler = getHandler(req);
@@ -35,7 +66,7 @@ function Router() {
 	});
 
 	function getHandler(req) {
-		
+
 		var keys, patt, esc, match;
 
 		for (patt in routes) {
@@ -72,11 +103,13 @@ function Router() {
 	function listen(port) {
 		listenQ.push(function() {
 			app.listen.apply(app, arguments);
+			reactor.attach(self);
 		}, arguments);
 	}
 
 	// (match, [method,] fun)
 	function route(match, method, fun) {
+
 		if (arguments.length==2) {
 			fun    = method;
 			method = '*';
@@ -90,7 +123,7 @@ function Router() {
 		route: route
 	}
 
-	Brink.enqueue(self, listenQ);
+	if (Brink.server) Brink.enqueue(self, listenQ);
 
 	self.http = app.raw;
 
