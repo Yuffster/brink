@@ -9,8 +9,7 @@
 
 var Queue = Brink.require("queue");
 
-function callback(fun, e, d) {
-	if (typeof fun != 'function') return;
+function callback(e, d) {
 	var i, args = [], fn;
 	if (e) Brink.fireEvent('error', e);
 	for (i in arguments) args.push(arguments[i]);
