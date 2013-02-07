@@ -9,7 +9,8 @@
 
 var Queue = Brink.require("queue");
 
-function callback(e,d) {
+function callback(fun, e, d) {
+	if (typeof fun != 'function') return;
 	var i, args = [], fn;
 	if (e) Brink.fireEvent('error', e);
 	for (i in arguments) args.push(arguments[i]);
@@ -17,47 +18,6 @@ function callback(e,d) {
 	if (fn&&fn.trigger) fn = fn.trigger;
 	if (fn) fn.apply(fn, args);
 };
-
-function callback(e,d) {
-  var i, args = [], fn;
-	if (e) Brink.fireEvent('error', e);
-	for (i in arguments) args.push(arguments[i]);
-	fn = args.shift();
-	if (fn&&fn.trigger) fn = fn.trigger;
-	if (fn) fn.apply(fn, args);
-};
-
-function Queue() {
-	
-	var triggered = false, funs = [];
-
-	function trigger() {
-		var args = arguments;
-		triggered = true;
-		funs.forEach(function(fun) {
-		  fun.apply(this, args);
-		});
-	}
-
-	function push(fun, args) {
-		if (!args) {
-			args = Array.prototype.slice.call(arguments);
-			args.shift();
-		}
-		Array.prototype.slice.call(args);
-		function exec() {
-			fun.apply(fun, args);
-		}
-		if (triggered) exec();
-		else funs.push(exec);
-	}
-
-	return {
-		trigger: trigger,
-		push: push
-	};
-
-}
 
 function enqueue(wrap,face,q) {
 	// The interface is an optional parameter.
