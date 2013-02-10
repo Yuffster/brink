@@ -40,7 +40,7 @@ function Assets() {
 			modules.forEach(function(module) {
 				scripts.push(module.path);
 				module.content = "\n"+module.content+"\n";
-				app.route(path.join(base, module.path), function(req, res) {
+				app.route(base+'/'+module.path, function(req, res) {
 					res.writeHead(200, {'Content-Type': 'application/javascript'});
 					res.end(Mustache.render(template, module));
 					if (cb) cb(null);
@@ -87,9 +87,9 @@ function Assets() {
 
 			if (!file) return cb(null, modules);
 
-			if (!file) {
-				cb(null, modules);
-			}
+			// Ignore server files
+			var fullPath = file.split(/\/|\\/);
+			if (fullPath[fullPath.length-2]=="server") return next();
 
 			fs.readFile(file, 'utf-8', function (err, f) {
 				modules.push({
@@ -109,23 +109,61 @@ function Assets() {
 
 	}
 
-	function getAllModules(cb) {
-		var mods = [];
-		getCoreModules(function(e,d) {
-			mods = d;
-			getAppModules(function(e,d) {
-				for (var i in d) mods.push(d[i]);
-			});
-			cb(null, mods);
+	var module_cache = {};
+
+	function getAppModules(cb) {
+		if (module_cache.app) return cb(null,module_cache.app);
+		getModules(Brink.application_path(), function(e,data) {
+			module_cache.app = data;
+			cb(e,data);
 		});
 	}
 
-	function getAppModules(cb) {
-		getModules(Brink.application_path(), cb);
+	function getCoreModules(cb) {
+		if (module_cache.core) return cb(null,module_cache.core);
+		getModules(Brink.path('lib'), function(e,data) {
+			module_cache.core = data;
+			cb(e,data);
+		});
 	}
 
-	function getCoreModules(cb) {
-		getModules(Brink.path('lib'), cb);
+	function getVendorModules(cb) {
+
+		if (module_cache.vendor) return cb(null, module_cache.vendor);
+
+		var modules = [], pending = 0;
+
+		function grabClientModules(p, ignore) {
+			pending++;
+			fs.readFile(path.join(p, 'package.json'), 'utf-8', function(e,d) {
+				d = JSON.parse(d || "{}");
+				var deps  = d.client_dependencies || [],
+				    index = (ignore) ? false : d.index || d.main;
+				deps.forEach(function(dep) {
+					grabClientModules(path.join(p, 'node_modules', dep))
+				});
+				function unpend() {
+					pending--;
+					if (pending==0) {
+						module_cache.vendor = modules; 
+						cb(null,modules);
+					}
+				}
+				if (index) {
+					fs.readFile(path.join(p, index),'utf-8',function (err, f){
+						modules.push({
+							path:'node_modules/'+path.basename(p)+'.js',
+							content:f,
+							name:path.basename(p)
+						});
+						unpend();
+					});
+				} else unpend();
+			});
+		};
+
+		grabClientModules(Brink.path('..'), true);
+
 	}
 
 	function getCoreScripts() {
@@ -149,6 +187,16 @@ function Assets() {
 		return s;
 	}
 
+	function getVendorScripts(cb) {
+		getVendorModules(function(e,modules) {
+			var mods = [];
+			modules.forEach(function(mod) {
+				mods.push( {src:'js/node_modules/'+mod.path} );
+			});
+			cb(mods);
+		});
+	}
+
 	function getScripts(p,web_root) {
 		var modules = [];
 		glob.sync(path.join(p, "**", "*.js")).forEach(function(file) {
@@ -170,8 +218,14 @@ function Assets() {
 				attachScripts(modules, '/js/app', app);
 			});
 
+			// TODO: Brink is just another module, let's do proper recursion and
+			// NPM-style module require paths on the client-side.
 			getCoreModules(function(e,modules) {
 				attachScripts(modules, '/js/brink', app);
+			});
+
+			getVendorModules(function(e,modules) {
+				attachScripts(modules, '/js/node_modules', app);
 			});
 
 			app.route('/js/app/_init.js', function(req, res) {
@@ -193,7 +247,6 @@ function Assets() {
 				res.write("Brink = Brink._creq('brink');");
 				res.end();
 			});
-
 
 		} else {
 
@@ -226,7 +279,8 @@ function Assets() {
 	return {
 		attach: attach,
 		getAppScripts: getAppScripts,
-		getCoreScripts: getCoreScripts
+		getCoreScripts: getCoreScripts,
+		getVendorScripts: getVendorScripts
 	};
 
 }

@@ -4,7 +4,7 @@
 
 	var module = { exports: {} };
 
-	Brink._cexp("{{{path}}}", function() {
+	Brink._cexp("{{{path}}}", function(require) {
 
 		return (new function(module) {
 

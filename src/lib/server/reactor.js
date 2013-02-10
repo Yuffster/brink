@@ -171,6 +171,10 @@ function Reactor(dir, fun) {
 			data.screen_name  = current_screen;
 			data.app_js  = assets.getAppScripts();
 			data.core_js = assets.getCoreScripts();
+			
+			assets.getVendorScripts(function(d) {
+				d.forEach(function(d) { data.core_js.push(d); });
+			});
 
 			data.body = Mustache.render(layouts._main, data);
 

@@ -1,4 +1,4 @@
-Brink._cexp("{{{path}}}", function() {
+Brink._cexp("{{{path}}}", function(require) {
 
 	var module = {exports:{}};
 	
