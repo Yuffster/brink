@@ -27,6 +27,7 @@ function Request(url, data) {
 		params : {},
 		path   : path,
 		files  : null,
+		user   : data.user,
 		method : (data.method) ? data.method.toLowerCase() : 'get',
 		headers: data.headers || {}
 	};
