@@ -115,8 +115,8 @@ function Router() {
 		routes[match].push({method:method, handler:fun});
 	}
 
-	function attach(thing) {
-		app.attach(thing);
+	function attach(thing,cb) {
+		app.attach(thing, cb);
 	}
 
 	self = {

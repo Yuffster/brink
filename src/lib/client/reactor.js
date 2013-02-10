@@ -31,10 +31,14 @@ function Reactor(dir, fun) {
 		window.document.body.id = current_screen;
 	}
 
-	function render(screen, data) {
+	function render(screen, data, cb) {
+		if (!cb) {
+			cb = data;
+			data = null;
+		}
 		current_screen = screen;
 		var content = Mustache.render(screens[screen], (data||{}), partials);
-		return liveUpdate(content);
+		cb(liveUpdate(content));
 	}
 
 	function update(data) {

@@ -55,7 +55,7 @@ function Reactor(dir, fun) {
 	var screens   = {}, 
 	    layouts   = {},
 	    partials  = {},
-	    doc, current_screen, head;
+	    doc, current_screen, head, scripts;
 
 	var self = {};
 
@@ -66,12 +66,10 @@ function Reactor(dir, fun) {
 		}
 		if (Brink.server) {
 			parseHTML(dir, function(e,html) {
-				compile();
-				Brink.callback(fun, self);
+				compile(function() { Brink.callback(fun, self) });
 			});
 		} else {
-			compile();
-			Brink.callback(fun, self);
+			compile(function() { Brink.callback(fun, self) });
 		}
 	}(dir));
 
@@ -151,11 +149,11 @@ function Reactor(dir, fun) {
 
 	}
 
-	function compile() {
+	function compile(cb) {
 
-		if (doc) return doc;
+		if (doc) cb(doc);
 
-		var html;
+		var scripts = {};
 
 		//The first render of the application is always server-side and static.
 		function staticRender(body) {
@@ -169,26 +167,30 @@ function Reactor(dir, fun) {
 
 			data.body = body;
 			data.screen_name  = current_screen;
-			data.app_js  = assets.getAppScripts();
-			data.core_js = assets.getCoreScripts();
-			
-			assets.getVendorScripts(function(d) {
-				d.forEach(function(d) { data.core_js.push(d); });
-			});
+			data.app_js  = scripts.app_js;
+			data.core_js = scripts.core_js;
 
 			data.body = Mustache.render(layouts._main, data);
-
 			html = Mustache.render(content, data);
-
 			return html;
 
 		}
 
-		doc = {
-			render: staticRender
-		};
+		scripts.app_js  = assets.getAppScripts();
 
-		return doc;
+		scripts.core_js = [{src:'js/core/_init.js'}];
+		
+		assets.getVendorScripts(function(d) {
+			d.forEach(function(d) { scripts.core_js.push(d); });
+			doc = {
+				render: staticRender
+			};
+			assets.getCoreScripts().forEach(function(d) {
+				scripts.core_js.push(d);
+			});
+			cb(doc);
+		});
+		
 
 	}
 

@@ -154,7 +154,7 @@ function Assets() {
 						modules.push({
 							path:'node_modules/'+path.basename(p)+'.js',
 							content:f,
-							name:path.basename(p)
+							name:path.basename(p, '.js')
 						});
 						unpend();
 					});
@@ -171,7 +171,6 @@ function Assets() {
 			return [{src:'js/brink.js'}];
 		}
 		var s = getScripts(Brink.path('lib'), 'js/brink');
-		s.unshift({src:'js/core/_init.js'});
 		s.push({src:'js/app/_templates.js'});
 		s.push({src:'socket.io/socket.io.js'});
 		s.push({src:'js/core/_brink.js'});
@@ -191,7 +190,7 @@ function Assets() {
 		getVendorModules(function(e,modules) {
 			var mods = [];
 			modules.forEach(function(mod) {
-				mods.push( {src:'js/node_modules/'+mod.path} );
+				mods.push( {src:'js/node_modules/'+mod.path } );
 			});
 			cb(mods);
 		});
@@ -204,7 +203,7 @@ function Assets() {
 			var base = path.relative(p, file);
 			modules.push({
 				src:path.join(web_root, base),
-				name:base+'.js'
+				name:base
 			});
 		});
 		return modules;
