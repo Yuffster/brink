@@ -16,8 +16,11 @@
 		"socket.io": "*",
 		"glob": "*",
 		"jsdom": "*",
+		"jsonparse":"*",
 		"mustache": "*",
 		"mongodb": "*",
-		"connect": "*"
-	}
+		"connect": "*",
+		"uuid-v4": "*"
+	},
+	"client_dependencies": ["uuid-v4"]
 }
