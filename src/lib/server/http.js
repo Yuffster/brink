@@ -7,22 +7,19 @@ function HTTP(handler) {
 	    connect = require('connect'),
 	    app     = connect(),
 	    server  = require('http').createServer(app),
-	    Queue   = Brink.require('queue'), 
-	    users   = Brink.require('user_connections');
+	    Queue   = Brink.require('queue');
 
 	app.use(connect.bodyParser())
 	   .use(connect.cookieParser('optional secret string'))
 
 	app.use(function (req, res, next) {
 
-		var session = req.cookies.brink_sessionID;
-
 		var data = {}, breq, bres;
 
 		data.method  = req.method;
 		data.headers = req.headers;
 		data.body    = req.body;
-		data.user    = (session) ? users.find(session) : false;
+		data.cookies = req.cookies;
 
 		breq = new Request(req.url, data);
 		bres = new Response();

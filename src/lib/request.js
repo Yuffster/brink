@@ -1,3 +1,5 @@
+var users = Brink.require('user_connections');
+
 function Request(url, data) {
 
 	var post=data.body, path, get = {}, m;
@@ -21,12 +23,16 @@ function Request(url, data) {
 
 	}
 
+	var session = data.cookies.brink_sessionID;
+	data.user   = (session) ? users.find(session) : false;
+
 	return {
 		get    : get,
 		post   : post,
 		params : {},
 		path   : path,
 		files  : null,
+		cookies: data.cookies,
 		user   : data.user,
 		method : (data.method) ? data.method.toLowerCase() : 'get',
 		headers: data.headers || {}
