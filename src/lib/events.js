@@ -30,6 +30,8 @@ function fire() {
  * Adds an event handler. The optional middle argument can be an object
  * to match against before running the handler method.
  *
+ * Return the event handler that was added so that it can be removed later
+ *
  ~ (I know, I know, optional middle argument, special hell.)
  */
 function on(type, crit, handler) {
@@ -47,9 +49,30 @@ function on(type, crit, handler) {
 	}
 	if (!handlers[type]) handlers[type] = [];
 	this.handlers[type].push(fun);
+  return fun;
+}
+
+/**
+ * Remove an event handler, given the handler type and the handler itself.
+ * If the handler is unspecified, remove all of the handlers for the 
+ * given type.
+ */
+function deregister(type, handler) {
+	if(handlers[type]) {
+    if (arguments.length>1) {
+		  var tmp = handlers[type];
+		  handlers[type] = [];
+		  for (var i in tmp) {
+		  	if (tmp[i]!==handler) handlers[type].push(tmp[i]);
+		  }
+    } else {
+      handlers[type] = [];
+    }
+	}
 }
 
 module.exports = {
 	fire: fire,
-	on: on
+	on: on,
+	deregister: deregister
 };

@@ -12,6 +12,7 @@ Brink = (typeof window !== "undefined")
 var events      = Brink.require('events');
 Brink.fireEvent = events.fire
 Brink.addEvent  = events.on;
+Brink.removeEvent = events.deregister;
 
 var enqueue     = Brink.require('enqueue');
 Brink.enqueue   = enqueue.enqueue;
