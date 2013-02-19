@@ -8,7 +8,7 @@
 		"url" : "git://github.com/Yuffster/brink.git"
 	},
 	"scripts": {
-		"brink": "node cli.js"
+		"brink": "node bin/cli.js"
 	},
 	"main": "src/lib/brink.js",
 	"dependencies": {
@@ -20,7 +20,9 @@
 		"mustache": "*",
 		"mongodb": "*",
 		"connect": "*",
-		"uuid-v4": "*"
+		"uuid-v4": "*",
+		"client_require": "*"
 	},
+	"client_require": "./src/lib",
 	"client_dependencies": ["uuid-v4"]
 }

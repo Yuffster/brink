@@ -7,7 +7,7 @@
 var Brink;
 
 Brink = (typeof window !== "undefined")
-      ? require('client/init') : require('./server/init');
+      ? require('./client/init') : require('./server/init');
 
 var events      = Brink.require('events');
 Brink.fireEvent = events.fire
@@ -27,14 +27,15 @@ Brink.find      = Collections.find;
 Brink.find_one  = Collections.find_one;
 Brink.create    = Collections.create;
 
+var transport = new Brink.require('transport')(router);
+
 Brink.listen = function(port) {
 	if (Brink.server) {
-		var assets = new require('./server/assets')();
-		assets.attach(router);
-	}
-	router.listen(port);
+		var creq = require('client_require');
+		creq.add_path(Brink.path('..'));
+		creq.set('app_root', BRINK_ENV.application_path);
+		router.use(creq.connect());
+	} router.listen(port);
 }
-
-var transport = new Brink.require('transport')(router);
 
 module.exports = Brink;

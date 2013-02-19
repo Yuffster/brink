@@ -10,7 +10,7 @@ function HTTP(handler) {
 	    Queue   = Brink.require('queue');
 
 	app.use(connect.bodyParser())
-	   .use(connect.cookieParser('optional secret string'))
+	   .use(connect.cookieParser())
 
 	app.use(function (req, res, next) {
 
@@ -43,9 +43,14 @@ function HTTP(handler) {
 		});
 	}
 
+	function use(thing,cb) {
+		app.use(thing);
+	}
+
 	return {
 		listen: listen,
-		attach: attach
+		attach: attach,
+		use: use
 	};
 
 }

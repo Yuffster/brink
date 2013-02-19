@@ -2,21 +2,13 @@
 <html lang="en">
 <head>
 
-	{{#core_js}}
-		<script src="{{core_root}}/{{src}}"></script>
-	{{/core_js}}
-
-	<meta charset="utf-8">
-	<title></title>
-
 	{{{head}}}
-
-	{{#app_js}}
-		<script src="{{app_root}}/{{src}}"></script>
-	{{/app_js}}
 
 </head>
 <body id="{{screen_name}}">
 	{{{body}}}
+	{{#scripts}}
+		<script src="{{src}}"></script>
+	{{/scripts}}
 </body>
 </html>

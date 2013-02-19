@@ -45,8 +45,7 @@
 var fs     = require('fs'),
     jsdom  = require('jsdom'),
     glob   = require('glob'),
-    path   = require('path'),
-    assets = new Brink.require('assets')();
+    path   = require('path');
 
 Mustache = Brink.require("mustache");
 
@@ -153,8 +152,6 @@ function Reactor(dir, fun) {
 
 		if (doc) cb(doc);
 
-		var scripts = {};
-
 		//The first render of the application is always server-side and static.
 		function staticRender(body) {
 
@@ -166,9 +163,14 @@ function Reactor(dir, fun) {
 			};
 
 			data.body = body;
-			data.screen_name  = current_screen;
-			data.app_js  = scripts.app_js;
-			data.core_js = scripts.core_js;
+			data.screen_name = current_screen;
+
+			var scripts = [];
+			scripts.push({src:Brink.config('app_js')});
+			scripts.push({src:Brink.config('socket_js')});
+			scripts.push({src:Brink.config('template_js')});
+
+			data.scripts = scripts;
 
 			data.body = Mustache.render(layouts._main, data);
 			html = Mustache.render(content, data);
@@ -176,21 +178,9 @@ function Reactor(dir, fun) {
 
 		}
 
-		scripts.app_js  = assets.getAppScripts();
+		doc = {render:staticRender};
 
-		scripts.core_js = [{src:'js/core/_init.js'}];
-		
-		assets.getVendorScripts(function(d) {
-			d.forEach(function(d) { scripts.core_js.push(d); });
-			doc = {
-				render: staticRender
-			};
-			assets.getCoreScripts().forEach(function(d) {
-				scripts.core_js.push(d);
-			});
-			cb(doc);
-		});
-		
+		cb(doc);
 
 	}
 
@@ -206,7 +196,7 @@ function Reactor(dir, fun) {
 
 	function attach(router) {
 
-		router.route('/js/app/_templates.js', function(req,res) {
+		router.route(Brink.config('template_js'), function(req,res) {
 
 			var data = "";
 

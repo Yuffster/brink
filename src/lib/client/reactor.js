@@ -11,7 +11,7 @@ Mustache = Brink.require("mustache");
 
 function Reactor(dir, fun) {
 
-	var templates = window.__brink_templates,
+	var templates = window.__brink_templates || {},
 	    screens   = templates.screens, 
 	    layouts   = templates.layouts,
 	    partials  = templates.partials,
