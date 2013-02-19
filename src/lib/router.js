@@ -22,7 +22,7 @@ function Router() {
 					d = d.data();
 				} else {
 					for (var k in d) {
-						if (typeof(d[k].data=="function")) d[k] = d[k].data();
+						if (typeof d[k].data=="function") d[k] = d[k].data();
 					}
 				} res.end(reactor.render(view, d));
 			}
@@ -119,10 +119,15 @@ function Router() {
 		app.attach(thing, cb);
 	}
 
+	function use(thing) {
+		app.use(thing);
+	}
+
 	self = {
 		listen: listen,
 		route: route,
-		attach: attach
+		attach: attach,
+		use: use
 	}
 
 	if (Brink.server) Brink.enqueue(self, listenQ);
