@@ -18,17 +18,9 @@ Brink.application_path = function() {
 	return path.join.apply(this, args);
 };
 
-Brink.require = function(lib) {
-
-	var p  = Brink.path('lib',lib),
-		sp = Brink.path('lib', 'server', lib);
-
-	//If the module doesn't exist, check in the server/ path.
-	if (!path.existsSync(p+'.js') && path.existsSync(sp+'.js')) p = sp;
-
-	return require(p);
-
-};
+Brink.require = function(p) {
+	return require('client_require').require(Brink.path('lib',p+'.js'));
+}
 
 Brink.config = new Brink.require('config')();
 
