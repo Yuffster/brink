@@ -124,10 +124,10 @@ function Router() {
 	}
 
 	self = {
-		listen: listen,
-		route: route,
-		attach: attach,
-		use: use
+		listen : listen,
+		route  : route,
+		attach : attach,
+		use    : use
 	}
 
 	if (Brink.server) Brink.enqueue(self, listenQ);
