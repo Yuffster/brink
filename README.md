@@ -33,4 +33,4 @@ Module Dependency Tree
 
 The following dependency tree is a high-level view of what will be known as Brink core.
 
-![Dependency Tree](http://yuml.me/9fb24000)
+![Dependency Tree](http://yuml.me/91e02a11)
