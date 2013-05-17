@@ -19,14 +19,14 @@ Name | Description | Released | Docs | Tests
 [client_require](http://github.com/Yuffster/client_require) | Provides synchronous `require()` on the client and server. | :white_check_mark: | :white_check_mark: | :x: 
 [Eve.js](http://evejs.com) | Scoped client-side mixable modules. | :white_check_mark: | :white_check_mark: | [![Build Status](https://secure.travis-ci.org/Yuffster/Eve.js.png)](http://travis-ci.org/Yuffster/Eve.js) 
 [Sinch](http://github.com/Yuffster/sinch) | Interface-aware pseudosynchronous API framework. |  :white_check_mark: |  :white_check_mark: |  [![Build Status](https://secure.travis-ci.org/Yuffster/sinch.png)](http://travis-ci.org/Yuffster/sinch)
-[Trī](http://github.com/Yuffster/tri) | Asynchronous try/catch logic for Sinch, `(e, data)` and Promises. |  :hourglass: |  :x: |  :x:
+[Trī](http://github.com/Yuffster/tri) | Asynchronous try/catch logic for Sinch, `(e, data)` and Promises. |  :x: |  :x: |  :x:
 [Zipline](http://github.com/Yuffster/zipline) | Unified client/server routing and template rendering. | :x: | :x:  | :x:
 [Confetti](http://github.com/Yuffster/confetti) | Realtime data synch on client/sever with abstracted interface. | :x: | :x: | :x:
 Confetti_SQL | Generic SQL drivers for Confetti. | :x: | :x: | :x:
 Confetti_Mongo | Generic MongoDB drivers for Confetti. | :x: | :x: | :x:
 [Fief](http://github.com/Yuffster/fief) | Self-contained server/client modules on Eve.js and Zipline. | :x: | :x: | :x: 
 [Serf](http://github.com/Yuffster/serf) | Framework-agnostic API subset for client-side DOM scripting. | :x: | :x: | :x:
-[Logical](http://github.com/Yuffster/logical) | Logic-based JS template rendering that doesn't suck. | :white_check_mark: | :white_check_mark: | :x:  
+[Logical](http://github.com/Yuffster/logical) | Logic-based JS template rendering that doesn't suck. | :white_check_mark: | :white_check_mark: | :hourglass:  
 
 Module Dependency Tree
 ===
