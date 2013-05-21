@@ -26,11 +26,11 @@ Confetti_SQL | Generic SQL drivers for Confetti. | :x: | :x: | :x:
 Confetti_Mongo | Generic MongoDB drivers for Confetti. | :x: | :x: | :x:
 [Fief](http://github.com/Yuffster/fief) | Self-contained server/client modules on Eve.js and Zipline. | :x: | :x: | :x: 
 [Serf](http://github.com/Yuffster/serf) | Framework-agnostic API subset for client-side DOM scripting. | :x: | :x: | :x:
-[Logical](http://github.com/Yuffster/logical) | Logic-based JS template rendering that doesn't suck. | :white_check_mark: | :white_check_mark: | :hourglass:  
+[Logical](http://github.com/Yuffster/logical) | Logic-based JS template rendering that doesn't suck. | :white_check_mark: | :white_check_mark: | [![Build Status](https://secure.travis-ci.org/Yuffster/logical.png)](http://travis-ci.org/Yuffster/logical) 
 
 Module Dependency Tree
 ===
 
 The following dependency tree is a high-level view of what will be known as Brink core.
 
-![Dependency Tree](http://yuml.me/9a6b8797)
+![Dependency Tree](http://yuml.me/47f701cb)
